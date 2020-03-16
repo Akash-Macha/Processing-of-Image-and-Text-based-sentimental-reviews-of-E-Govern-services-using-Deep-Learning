@@ -71,19 +71,23 @@ def digitRecognize():
     global filename
     filename = filedialog.askopenfilename(initialdir="testImages")
     # pathlabel.config(text=filename)
-    text.delete('1.0', END)
-    text.insert(END, filename + " loaded\n")
 
     imagetest = image.load_img(filename, target_size=(28, 28), grayscale=True)
     imagetest = image.img_to_array(imagetest)
     imagetest = np.expand_dims(imagetest, axis=0)
     pred = digits_cnn_model.predict(imagetest.reshape(1, 28, 28, 1))
     predicted = str(pred.argmax())
+
+    text.delete('1.0', END)
+    text.insert(END, "Digits Predicted As : " + predicted)
+    main.update_idletasks()
+
     imagedisplay = cv2.imread(filename)
     gorig = imagedisplay.copy()
     output = imutils.resize(gorig, width=400)
     cv2.putText(output, "Digits Predicted As : " + predicted, (10, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
     cv2.imshow("Predicted Image Result", output)
+
     cv2.waitKey(0)
 
 
@@ -115,8 +119,13 @@ def viewSentiment():
             arr = line.split("#")
             text_processed = stem(arr[1])
             X = [text_processed]
-            sentiment = text_sentiment_model.predict(X)
-            print('chck\n\n\n = ', sentiment)
+            try:
+                sentiment = text_sentiment_model.predict(X)
+            except NameError:
+                text.delete('1.0', END)
+                text.insert(END, "Please Generate Text & Image based Sentiment Modal first!\n\n")
+                main.update_idletasks()
+
             predicts = 'None'
             if sentiment[0] == 0:
                 predicts = "Negative"
@@ -229,13 +238,13 @@ digitButton = Button(main, text="Generate Hand Written Digits Recognition Deep L
 digitButton.place(x=50, y=100)
 digitButton.config(font=font1)
 
-sentimentButton = Button(main, text="Generate Text & Image Based Sentiment Detection Deep Learning Model", command=sentimentModel)
-sentimentButton.place(x=50, y=150)
-sentimentButton.config(font=font1)
-
 recognizeButton = Button(main, text="Upload Image & Recognize Digit", command=digitRecognize)
-recognizeButton.place(x=50, y=200)
+recognizeButton.place(x=50, y=150)
 recognizeButton.config(font=font1)
+
+sentimentButton = Button(main, text="Generate Text & Image Based Sentiment Detection Deep Learning Model", command=sentimentModel)
+sentimentButton.place(x=50, y=200)
+sentimentButton.config(font=font1)
 
 # Write Your Opinion About Government Policies
 opinionButton = Button(main, text="Write Your Opinion About Government Policies", command=opinion)
@@ -247,20 +256,20 @@ viewButton = Button(main, text="View Peoples Sentiments From Opinions", command=
 viewButton.place(x=50, y=300)
 viewButton.config(font=font1)
 
-photoButton = Button(main, text="Upload Your Face Expression Photo About Government Policies", command=uploadPhoto)
+photoButton = Button(main, text="Upload & Recognize Your Face Expression Photo About Government Policies", command=uploadPhoto)
 photoButton.place(x=50, y=350)
 photoButton.config(font=font1)
 
-photosentimentButton = Button(main, text="Detect Sentiments From Face Expression Photo", command=photoSentiment)
-photosentimentButton.place(x=50, y=400)
-photosentimentButton.config(font=font1)
+# photosentimentButton = Button(main, text="Detect Sentiments From Face Expression Photo", command=photoSentiment)
+# photosentimentButton.place(x=50, y=400)
+# photosentimentButton.config(font=font1)
 
 
 font1 = ('times', 12, 'bold')
 text = Text(main, height=15, width=80)
 scroll = Scrollbar(text)
 text.configure(yscrollcommand=scroll.set)
-text.place(x=700, y=150)
+text.place(x=710, y=150)
 text.config(font=font1)
 
 
@@ -268,7 +277,7 @@ displayLabel = Label(main, text='Display:', anchor=W, justify=CENTER)
 displayLabel.config(bg='grey', fg='green')
 displayLabel.config(font=font)
 # displayLabel.config(height=1, width=8)
-displayLabel.place(x=700, y=120)
+displayLabel.place(x=710, y=120)
 
 
 main.config(bg='grey')
