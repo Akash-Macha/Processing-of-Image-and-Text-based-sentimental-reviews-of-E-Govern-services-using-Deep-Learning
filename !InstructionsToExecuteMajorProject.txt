@@ -1,0 +1,55 @@
+1. Install latest Python
+    https://www.python.org/downloads/
+2. Install Anaconda
+3. Execute the following commands in Anaconda to install TensorFlow
+
+    (base) C:\Users\Akash>py -m pip install --upgrade pip
+
+    (base) C:\Users\Akash>py -m pip install --user virtualenv
+
+    (base) C:\Users\Akash>conda create -n venv pip python=3.7.4  # put required version here
+
+        The following NEW packages will be INSTALLED:
+        .
+        .
+
+        Proceed ([y]/n)? y
+
+    (base) C:\Users\Akash>pip install --upgrade tensorflow
+
+                                        (base) C:\Users\Akash>conda activate venv
+
+                                        (venv) C:\Users\Akash>pip install --upgrade tensorflow
+                                            The command actually took good amount of time (10-15 mins I guess)
+
+                                        (venv) C:\Users\Akash>python -c "import tensorflow as tf;print(tf.reduce_sum(tf.random.normal([1000, 1000])))"
+                                            - Verify the install (TensorFlow)
+
+4. Goto projects directory, where your source code is located ( eg: C:\..\!MajorProjectCode\EGovernment-CODE> )
+
+5. Execute the following commands
+
+    python -m pip install -U pip
+    python -m pip install -U matplotlib [done]
+    pip install numpy                   [done]
+    pip install sklearn                 [done]
+    pip install keras                   [done]
+    pip install keras.models            [done]
+    pip install keras.preprocessing     [done]
+    pip install imutils                 [done]
+    pip install nltk                    [done]
+
+6. Goto python Interpreter from the current project location, with python command
+    - C:\..\!MajorProjectCode\EGovernment-CODE>python
+
+7. import our main source file
+
+    >>> import EGovernment.py
+
+8. DONE, you should be seeing the running Application!
+
+
+Refs:
+    TensorFlow:  https://youtu.be/s4Lcf9du9L8
+    https://www.tensorflow.org/install/pip
+    https://matplotlib.org/users/installing.html
