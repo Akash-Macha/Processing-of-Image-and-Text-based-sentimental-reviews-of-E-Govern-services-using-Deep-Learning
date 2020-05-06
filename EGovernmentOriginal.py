@@ -259,7 +259,7 @@ photosentimentButton.config(font=font1)
 font1 = ('times', 12, 'bold')
 
 # Create Text Box
-text = Text(main, height=15, width=75)
+text = Text(main, height=17, width=75)
 scroll = Scrollbar(text)
 text.configure(yscrollcommand=scroll.set)
 text.place(x=700, y=120)
@@ -270,7 +270,7 @@ displayLabel = Label(main, text='Display:', anchor=W, justify=CENTER)
 displayLabel.config(bg='grey', fg='green')
 displayLabel.config(font=font)
 # displayLabel.config(height=1, width=8)
-displayLabel.place(x=700, y=120)
+displayLabel.place(x=700, y=90)
 
 
 main.config(bg='grey')
