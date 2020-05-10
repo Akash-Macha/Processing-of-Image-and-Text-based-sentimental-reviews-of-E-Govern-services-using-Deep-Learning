@@ -25,7 +25,8 @@ import nltk
 
 
 main = tkinter.Tk()
-main.title("Processing of Image and Text based sentimental reviews of E-Government services using Deep Learning")
+          # ANALYSING SENTIMENTAL REVIEWS OF E-GOVERNMENT SERVICES USING DEEP LEARNING
+main.title("Analysing Sentimental Reviews of E-Government Services using Deep Learning")
 main.geometry("1350x500")
 
 EMOTIONS = ["angry", "disgust", "scared", "happy", "sad", "surprised", "neutral"]
@@ -39,11 +40,11 @@ global text_sentiment_model
 global face_detection
 global image_sentiment_model
 global digits_cnn_model
-modals_created = []
+models_created = []
 
 
 def digitModel():
-    if 'digitModel' not in modals_created:
+    if 'digitModel' not in models_created:
         global digits_cnn_model
         with open('models/digits_cnn_model.json', "r") as json_file:
             loaded_model_json = json_file.read()
@@ -55,14 +56,14 @@ def digitModel():
         text.delete('1.0', END)
         text.insert(END, 'Digits based Deep Learning CNN Model generated\n')
 
-        modals_created.append('digitModel')
+        models_created.append('digitModel')
     else:
         text.delete('1.0', END)
         text.insert(END, 'Digits based Deep Learning CNN Model is already generated\n')
 
 
 def sentimentModel():
-    if 'sentimentModel' not in modals_created:
+    if 'sentimentModel' not in models_created:
         text.delete('1.0', END)
         # text.insert(END, 'Takes time, Please give it a movement :)\n')
         # text.delete('1.0', END)
@@ -79,20 +80,23 @@ def sentimentModel():
         text.insert(END, 'Image based sentiment Deep Learning CNN Model generated\n')
         print(image_sentiment_model.summary())
 
-        modals_created.append('sentimentModel')
+        models_created.append('sentimentModel')
     else:
         text.delete('1.0', END)
         text.insert(END, 'Text & Image based sentiment Deep Learning CNN Model is already generated\n')
 
 
 def digitRecognize():
-    text.delete('1.0', END)
-    global filename
-    filename = filedialog.askopenfilename(initialdir="testImages")
-    # pathlabel.config(text=filename)
-    # text.insert(END, filename + " loaded\n")
-
     try:
+        # to check whether digits_cnn_model is been generated
+        digits_cnn_model
+
+        text.delete('1.0', END)
+        global filename
+        filename = filedialog.askopenfilename(initialdir="testImages")
+        # pathlabel.config(text=filename)
+        # text.insert(END, filename + " loaded\n")
+
         imagetest = image.load_img(filename, target_size=(28, 28), grayscale=True)
         imagetest = image.img_to_array(imagetest)
         imagetest = np.expand_dims(imagetest, axis=0)
@@ -106,7 +110,7 @@ def digitRecognize():
         cv2.waitKey(0)
     except NameError:
         text.delete('1.0', END)
-        text.insert(END, "Please Generate the Digits Recognition Modal first.")
+        text.insert(END, "Please Generate the Digits Recognition Model first.")
 
 
 def takeOpinion():
@@ -133,70 +137,85 @@ def stem(textmsg):
 
 
 def viewSentiment():
-    text.delete('1.0', END)
-    with open("Peoples_Opinion/opinion.txt", "r") as file:
-        for line in file:
-            line = line.strip('\n')
-            line = line.strip()
-            arr = line.split("#")
-            text_processed = stem(arr[1])
-            X = [text_processed]
-            sentiment = text_sentiment_model.predict(X)
-            print('chck\n\n\n = ', sentiment)
-            predicts = 'None'
-            if sentiment[0] == 0:
-                predicts = "Negative"
-            if sentiment[0] == 1:
-                predicts = "Positive"
-            text.insert(END, "Username : " + arr[0] + "\n");
-            text.insert(END, "Opinion  : " + arr[1] + " : Sentiment Detected As : " + predicts + "\n\n")
+    try:
+        # to check whether text_sentiment_model is been generated
+        text_sentiment_model
+
+        text.delete('1.0', END)
+        with open("Peoples_Opinion/opinion.txt", "r") as file:
+            for line in file:
+                line = line.strip('\n')
+                line = line.strip()
+                arr = line.split("#")
+                text_processed = stem(arr[1])
+                X = [text_processed]
+                sentiment = text_sentiment_model.predict(X)
+                print('chck\n\n\n = ', sentiment)
+                predicts = 'None'
+                if sentiment[0] == 0:
+                    predicts = "Negative"
+                if sentiment[0] == 1:
+                    predicts = "Positive"
+                text.insert(END, "Username : " + arr[0] + "\n");
+                text.insert(END, "Policy/Service : " + arr[2] + "\n");
+                text.insert(END, "Opinion  : " + arr[1] + " : Sentiment Detected As : " + predicts + "\n\n")
+    except NameError:
+        text.delete('1.0', END)
+        text.insert(END, "Please Generate the Image and Text based sentimental Model first.")
 
 
 def uploadPhotoAndDetectSentiment():
-    filename = filedialog.askopenfilename(initialdir="expression_images_to_upload")
-    user = simpledialog.askstring("Please enter your name", "Username")
-    policy = simpledialog.askstring("Please enter Government Policy name related to Facial Expression", "Please enter Government Policy name related to Facial Expression")
+    try:
+        # to check if we have generated the model
+        face_detection
 
-    text.delete('1.0', END)
-    text.insert(END, "Processing your image...\n\n")
-    main.update_idletasks()
+        filename = filedialog.askopenfilename(initialdir="expression_images_to_upload")
+        user = simpledialog.askstring("Please enter your name", "Username")
+        policy = simpledialog.askstring("Please enter Government Policy name related to Facial Expression", "Please enter Government Policy name related to Facial Expression")
 
-    img = cv2.imread(filename)
-    # writePath = "sentimentImages/" + user + "-" + policy + ".jpg"
-
-    # cv2.imwrite(writePath, img)
-
-    # use img to Detect the sentiment
-    faces = face_detection.detectMultiScale(img, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30), flags=cv2.CASCADE_SCALE_IMAGE)
-    msg = ''
-    if len(faces) > 0:
-        faces = sorted(faces, reverse=True, key=lambda x: (x[2] - x[0]) * (x[3] - x[1]))[0]
-        (x, y, w, h) = faces
-        cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)
-        temp = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        roi = temp[y:y + h, x:x + w]
-        roi = cv2.resize(roi, (48, 48))
-        roi = roi.astype("float") / 255.0
-        roi = img_to_array(roi)
-        roi = np.expand_dims(roi, axis=0)
-        preds = image_sentiment_model.predict(roi)[0]
-        emotion_probability = np.max(preds)
-        sentiment = EMOTIONS[preds.argmax()]
-
-        writePath = "sentimentImages/" + user + "-" + policy + "-" + sentiment + ".jpg"
-
-        # image has been saved into sentimentImages
-        cv2.imwrite(writePath, img)
-
-        msg = "Sentiment detected as : " + sentiment
-        text.insert(END, msg)
+        text.delete('1.0', END)
+        text.insert(END, "Processing your image...\n\n")
         main.update_idletasks()
 
-        img_height, img_width = img.shape[:2]
-        cv2.putText(img, msg, (50, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-        cv2.imshow(writePath, img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+        img = cv2.imread(filename)
+        # writePath = "sentimentImages/" + user + "-" + policy + ".jpg"
+
+        # cv2.imwrite(writePath, img)
+
+        # use img to Detect the sentiment
+        faces = face_detection.detectMultiScale(img, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30), flags=cv2.CASCADE_SCALE_IMAGE)
+        msg = ''
+        if len(faces) > 0:
+            faces = sorted(faces, reverse=True, key=lambda x: (x[2] - x[0]) * (x[3] - x[1]))[0]
+            (x, y, w, h) = faces
+            cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)
+            temp = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            roi = temp[y:y + h, x:x + w]
+            roi = cv2.resize(roi, (48, 48))
+            roi = roi.astype("float") / 255.0
+            roi = img_to_array(roi)
+            roi = np.expand_dims(roi, axis=0)
+            preds = image_sentiment_model.predict(roi)[0]
+            emotion_probability = np.max(preds)
+            sentiment = EMOTIONS[preds.argmax()]
+
+            writePath = "sentimentImages/" + user + "-" + policy + "-" + sentiment + ".jpg"
+
+            # image has been saved into sentimentImages
+            cv2.imwrite(writePath, img)
+
+            msg = "Sentiment detected as : " + sentiment
+            text.insert(END, msg)
+            main.update_idletasks()
+
+            img_height, img_width = img.shape[:2]
+            cv2.putText(img, msg, (50, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+            cv2.imshow(writePath, img)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+    except NameError:
+        text.delete('1.0', END)
+        text.insert(END, "Please Generate the Text & Image Based Sentiment Model first.")
 
     # use this logic for Consolicated Result
     # filename = 'sentimentImages'
@@ -241,6 +260,7 @@ def uploadPhotoAndDetectSentiment():
     # messagebox.showinfo("File has been removed", "File has been removed")
 
 
+# we're not using this func, I've used this logic in other implementation
 def photoSentiment():
     print('\n\nInphotoSentiment()\n')
     filename = 'sentimentImages'
@@ -282,73 +302,81 @@ def photoSentiment():
 def consolidatedResult():
     result = []
 
-    # 1. parsing images names in sentimentImages
-    pathToSentimentImages = 'sentimentImages'
-    fileNames = os.listdir(pathToSentimentImages)
-    for fileName in fileNames:
-        fileName = fileName[:-4]  # trim off   .jpg
-        name, policy, sentiment = fileName.split('-')
+    try:
+        # to check whether text_sentiment_model is been generated
+        text_sentiment_model
 
-        if policy not in result:
-            result.extend([policy, 0, 0])  # [poilicy, +ve, -ve feedbacks]
+        # 1. parsing images names in sentimentImages
+        pathToSentimentImages = 'sentimentImages'
+        fileNames = os.listdir(pathToSentimentImages)
+        for fileName in fileNames:
+            fileName = fileName[:-4]  # trim off   .jpg
+            name, policy, sentiment = fileName.split('-')
 
-        index = result.index(policy)
-        if sentiment in POSITIVE_EMOTIONS:
-            result[index + 1] += 1
-        else:  # Negative
-            result[index + 2] += 1
-
-    # 2. read options.txt file and parse them
-    pathToOpinions = 'Peoples_Opinion/opinion.txt'
-    with open(pathToOpinions, "r") as file:
-        # eg: Akash#It is a good policy#Pension
-        for line in file:
-            line = line.strip('\n')
-            line = line.strip()
-            arr = line.split("#")
-            text_processed = stem(arr[1])
-            X = [text_processed]
-            sentiment = text_sentiment_model.predict(X)
-
-            policy = arr[2]
             if policy not in result:
                 result.extend([policy, 0, 0])  # [poilicy, +ve, -ve feedbacks]
 
             index = result.index(policy)
-            if sentiment[0] == 0:
-                # predicts = "Negative"
-                result[index + 2] += 1
-            if sentiment[0] == 1:
-                # predicts = "Positive"
+            if sentiment in POSITIVE_EMOTIONS:
                 result[index + 1] += 1
+            else:  # Negative
+                result[index + 2] += 1
 
-    # 3. output the result
-    consolidated_output = 'Consolidated Results:\n'
-    for index in range(0, len(result) - 1, 3):
-        poilcy = result[index]
-        positive_feedback = result[index + 1]
-        negative_feedback = result[index + 2]
+        # 2. read options.txt file and parse them
+        pathToOpinions = 'Peoples_Opinion/opinion.txt'
+        with open(pathToOpinions, "r") as file:
+            # eg: Akash#It is a good policy#Pension
+            for line in file:
+                line = line.strip('\n')
+                line = line.strip()
+                arr = line.split("#")
+                text_processed = stem(arr[1])
+                X = [text_processed]
+                sentiment = text_sentiment_model.predict(X)
 
-        overall_result = ''
-        if positive_feedback >= negative_feedback:
-            overall_result = POSITIVE_RESULT
-        else:
-            overall_result = NEGATIVE_RESULT
+                policy = arr[2]
+                if policy not in result:
+                    result.extend([policy, 0, 0])  # [poilicy, +ve, -ve feedbacks]
 
-        consolidated_output += f'''
+                index = result.index(policy)
+                if sentiment[0] == 0:
+                    # predicts = "Negative"
+                    result[index + 2] += 1
+                if sentiment[0] == 1:
+                    # predicts = "Positive"
+                    result[index + 1] += 1
+
+        # 3. output the result
+        consolidated_output = 'Consolidated Results:\n'
+        for index in range(0, len(result) - 1, 3):
+            poilcy = result[index]
+            positive_feedback = result[index + 1]
+            negative_feedback = result[index + 2]
+
+            overall_result = ''
+            if positive_feedback >= negative_feedback:
+                overall_result = POSITIVE_RESULT
+            else:
+                overall_result = NEGATIVE_RESULT
+
+            consolidated_output += f'''
 Policy: {poilcy}
 Positive Feedback: {positive_feedback}
 Negative Feedback: {negative_feedback}
 Overall Result: {overall_result}
 
 '''
-    text.delete('1.0', END)
-    text.insert(END, consolidated_output)
+        text.delete('1.0', END)
+        text.insert(END, consolidated_output)
+    except NameError:
+        text.delete('1.0', END)
+        text.insert(END, "Please Generate the Deep Learning Models first.")
 
+# ------------ UI
 
 font = ('times', 16, 'bold')
 # title = Label(main, text='Automating E-Government Services With Artificial Intelligence', anchor=W, justify=CENTER)
-title = Label(main, text='Processing of Image and Text based sentimental reviews of E-Government services using Deep Learning', anchor=W, justify=CENTER)
+title = Label(main, text='Analysing Sentimental Reviews of E-Government Services using Deep Learning', anchor=W, justify=CENTER)
 title.config(bg='yellow4', fg='white')
 title.config(font=font)
 title.config(height=3, width=120)

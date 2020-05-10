@@ -3,3 +3,5 @@ sreeshma#It is very slow#DowryBill payment
 Sahithi#It is very good policy#Bill payment
 Macha#it is an extra ordinary policy#TEST
 TEST-2#This policy is crazy#TESt-2 policy name
+Human-2#good governance#Policy-2
+Sahithi#It is the worst policy i have ever seen#Dowry
