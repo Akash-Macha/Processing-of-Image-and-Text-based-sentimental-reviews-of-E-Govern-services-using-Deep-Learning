@@ -65,8 +65,6 @@ def digitModel():
 def sentimentModel():
     if 'sentimentModel' not in models_created:
         text.delete('1.0', END)
-        # text.insert(END, 'Takes time, Please give it a movement :)\n')
-        # text.delete('1.0', END)
 
         global text_sentiment_model
         global image_sentiment_model
@@ -150,7 +148,6 @@ def viewSentiment():
                 text_processed = stem(arr[1])
                 X = [text_processed]
                 sentiment = text_sentiment_model.predict(X)
-                print('chck\n\n\n = ', sentiment)
                 predicts = 'None'
                 if sentiment[0] == 0:
                     predicts = "Negative"
@@ -262,16 +259,9 @@ def uploadPhotoAndDetectSentiment():
 
 # we're not using this func, I've used this logic in other implementation
 def photoSentiment():
-    print('\n\nInphotoSentiment()\n')
     filename = 'sentimentImages'
     for root, dirs, files in os.walk(filename):
         for fdata in files:
-            print('\n')
-            print(root + "/" + fdata)
-            # sentimentImages/Ak-Raithu Bhandhu.jpg
-            # sentimentImages/Akash Macha-Good Government.jpg
-
-            print('\n')
             frame = cv2.imread(root + "/" + fdata)
             faces = face_detection.detectMultiScale(frame, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30), flags=cv2.CASCADE_SCALE_IMAGE)
             msg = ''
